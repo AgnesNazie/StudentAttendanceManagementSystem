@@ -1,0 +1,152 @@
+Student Attendance Management System (Java + JDBC + DAO)
+
+✅ Project Goal:
+Build a Java console application where:
+
+You can add new students.
+
+You can record attendance for each student by date.
+
+You can view all students and their attendance records.
+
+You will store and retrieve data from a MySQL database using JDBC.
+
+Use DAO pattern for all database interactions.
+
+Apply OOP principles like encapsulation, constructors, validation, and method overriding.
+
+🧠 Concepts You’ll Practice:
+Java classes, constructors, encapsulation
+
+Java collections (like List)
+
+DAO interface + implementation
+
+JDBC (connecting Java with MySQL)
+
+SQL: CREATE, INSERT, SELECT, DELETE, UPDATE
+
+Data validation with setters
+
+Try-catch blocks and exception handling
+
+📁 Project Structure (Files/Classes)
+css
+Copy
+Edit
+src/
+├── model/
+│   ├── Student.java
+│   └── Attendance.java
+├── dao/
+│   ├── StudentDAO.java
+│   ├── StudentDAOImpl.java
+│   ├── AttendanceDAO.java
+│   └── AttendanceDAOImpl.java
+├── db/
+│   └── DBConnection.java
+└── MainApp.java
+🔧 Database Setup in MySQL
+Create a MySQL database:
+
+sql
+Copy
+Edit
+CREATE DATABASE student_attendance_db;
+
+USE student_attendance_db;
+
+CREATE TABLE students (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    course VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE attendance (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    attendance_date DATE,
+    FOREIGN KEY (student_id) REFERENCES students(id)
+);
+✍️ Exercise Tasks (in order)
+Student.java – Create model class with fields id, name, course. Add getters, setters (with validation), constructor, and toString().
+
+Attendance.java – Create model class with id, studentId, attendanceDate.
+
+StudentDAO.java – Interface with methods like:
+
+java
+Copy
+Edit
+void saveStudent(Student student);
+Student findStudentById(int id);
+List<Student> getAllStudents();
+void deleteStudent(int id);
+AttendanceDAO.java – Interface with methods:
+
+java
+Copy
+Edit
+void markAttendance(Attendance attendance);
+List<Attendance> getAttendanceByStudentId(int studentId);
+DBConnection.java – Create a class that returns a JDBC Connection object using:
+
+java
+Copy
+Edit
+DriverManager.getConnection(url, username, password);
+StudentDAOImpl.java – Implement all StudentDAO methods using JDBC (SQL insert, select, delete).
+
+AttendanceDAOImpl.java – Implement methods using JDBC.
+
+MainApp.java – Console-based menu:
+
+pgsql
+Copy
+Edit
+1. Add new student
+2. View all students
+3. Mark attendance
+4. View attendance for a student
+5. Delete student
+6. Exit
+📝 Bonus Tips
+Validate that student names are not empty.
+
+Avoid marking attendance more than once per day.
+
+Display attendance dates in readable format.
+
+Handle all JDBC exceptions gracefully.
+
+🧩 Example Menu Flow
+ruby
+Copy
+Edit
+Welcome to Student Attendance Manager
+1. Add new student
+>> Enter name: Agnes
+>> Enter course: Java
+
+2. View all students
+>> [1] Agnes - Java
+
+3. Mark attendance
+>> Enter student ID: 1
+>> Attendance marked for: 2025-05-13
+
+4. View attendance
+>> Enter student ID: 1
+>> Attendance dates:
+   - 2025-05-13
+
+5. Exit
+Would you like me to start you with the MySQL table setup and Java class files step-by-step so you can build this from scratch and test it as you go?
+
+
+
+
+
+
+
+
