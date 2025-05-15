@@ -69,47 +69,43 @@ CREATE TABLE attendance (
     FOREIGN KEY (student_id) REFERENCES students(id)
 );
 ✍️ Exercise Tasks (in order)
-Student.java – Create model class with fields id, name, course. Add getters, setters (with validation), constructor, and toString().
+1). Student.java – Create model class with fields id, name, course. Add getters, setters (with validation), constructor, and toString().
 
-Attendance.java – Create model class with id, studentId, attendanceDate.
+2). Attendance.java – Create model class with id, studentId, attendanceDate.
 
-StudentDAO.java – Interface with methods like:
+3). StudentDAO.java – Interface with methods like:
 
-java
-Copy
-Edit
 void saveStudent(Student student);
 Student findStudentById(int id);
 List<Student> getAllStudents();
 void deleteStudent(int id);
-AttendanceDAO.java – Interface with methods:
 
-java
-Copy
-Edit
+
+4). AttendanceDAO.java – Interface with methods:
+
 void markAttendance(Attendance attendance);
 List<Attendance> getAttendanceByStudentId(int studentId);
-DBConnection.java – Create a class that returns a JDBC Connection object using:
 
-java
-Copy
-Edit
-DriverManager.getConnection(url, username, password);
-StudentDAOImpl.java – Implement all StudentDAO methods using JDBC (SQL insert, select, delete).
+5). DBConnection.java – Create a class that returns a JDBC Connection object using:
 
-AttendanceDAOImpl.java – Implement methods using JDBC.
 
-MainApp.java – Console-based menu:
+6). DriverManager.getConnection(url, username, password);
+7). StudentDAOImpl.java – Implement all StudentDAO methods using JDBC (SQL insert, select, delete).
 
-pgsql
-Copy
-Edit
+8). AttendanceDAOImpl.java – Implement methods using JDBC.
+
+9). Test the app.
+
+10). MainApp.java – Console-based menu:
+
+
 1. Add new student
 2. View all students
 3. Mark attendance
 4. View attendance for a student
 5. Delete student
 6. Exit
+
 📝 Bonus Tips
 Validate that student names are not empty.
 
@@ -120,9 +116,7 @@ Display attendance dates in readable format.
 Handle all JDBC exceptions gracefully.
 
 🧩 Example Menu Flow
-ruby
-Copy
-Edit
+
 Welcome to Student Attendance Manager
 1. Add new student
 >> Enter name: Agnes
