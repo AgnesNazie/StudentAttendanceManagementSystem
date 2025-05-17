@@ -10,7 +10,14 @@ public class Student {
     private String name;
     private String course;
 
-    //constructor
+    //default constructor
+    public Student(String name, String course) {
+        setId(id);
+        setName(name);
+        setCourse(course);
+    }
+
+    // parameterized constructor
     public Student(int id, String name, String course) {
         setId(id);
         setName(name);

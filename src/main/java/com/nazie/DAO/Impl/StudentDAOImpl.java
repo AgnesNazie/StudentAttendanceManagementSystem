@@ -22,25 +22,37 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public void saveStudent(Student student) {
-        String query = "INSERT INTO student (id, name, course) VALUES(?,?,?) ";
+        String sql = "INSERT INTO students (name, course) VALUES (?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, student.getId());
-            stmt.setString(2, student.getName());
-            stmt.setString(3, student.getCourse());
-            stmt.executeUpdate();
+            stmt.setString(1, student.getName());
+            stmt.setString(2, student.getCourse());
+            int rows = stmt.executeUpdate();
+
+
+            if (rows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int generatedId = generatedKeys.getInt(1);
+                        student.setId(generatedId);  // Set ID in object
+                        System.out.println(" Successfully saved student with ID: " + generatedId);
+                    }
+                }
+            } else {
+                System.out.println(" No rows inserted.");
+            }
 
         } catch (SQLException e) {
-            System.out.println("error saving student");
+            System.out.println(" Error saving student: " + e.getMessage());
             e.printStackTrace();
         }
-        System.out.println("Successfully save student");
 
     }
 
     @Override
     public Student findStudentById(int id) {
-        String query = "SELECT * FROM student WHERE id = ?";
+        String query = "SELECT * FROM students WHERE id = ?";
         Student student = null;
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
@@ -58,7 +70,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
-        String query = "SELECT * FROM student ";
+        String query = "SELECT * FROM students ";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -74,7 +86,7 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public void deleteStudent(int id) {
-        String query = "DELETE FROM student WHERE id = ?";
+        String query = "DELETE FROM students WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();

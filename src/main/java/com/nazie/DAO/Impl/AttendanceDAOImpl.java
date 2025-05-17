@@ -5,7 +5,6 @@ import com.nazie.JDBC.DBConnection;
 import com.nazie.model.Attendance;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,18 +22,31 @@ public class AttendanceDAOImpl implements AttendanceDAO {
 
     @Override
     public void markAttendance(Attendance attendance) {
-        String query = "INSERT INTO attendance (id, studentId, attendanceDate, status) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, attendance.getId());
-            stmt.setInt(2, attendance.getStudentId());
-            stmt.setDate(3, Date.valueOf(attendance.getAttendanceDate()));
-            stmt.setString(4, attendance.getStatus());
-            stmt.executeUpdate();
-            System.out.println("Successfully Mark attendance");
+        String query = "INSERT INTO attendance (id, student_Id, attendance_date, status) VALUES (?, ?, ?, ?)";
 
+        try {
+            connection.setAutoCommit(false);
+
+
+            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                stmt.setInt(1, attendance.getId());
+                stmt.setInt(2, attendance.getStudentId());
+                stmt.setDate(3, Date.valueOf(attendance.getAttendanceDate()));
+                stmt.setString(4, attendance.getStatus().name());
+                int rows = stmt.executeUpdate();
+                if (rows > 0) {
+                    connection.commit();
+                    System.out.println("Successfully Mark attendance");
+                }
+
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new RuntimeException("Error in marking Attendance");
+            }
         } catch (SQLException e) {
-            System.out.println("Error in marking attendance");
-            e.printStackTrace();
+
+            throw new RuntimeException("Error in marking attendance");
+
         }
 
     }
@@ -42,20 +54,23 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     @Override
     public List<Attendance> getAttendanceByStudentId(int studentId) {
         List<Attendance> attendances = new ArrayList<>();
-        String query = "SELECT * FROM attendances";
-        try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(query);
+        String query = "SELECT * FROM attendance WHERE student_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)){
+            stmt.setInt(1, studentId);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 attendances.add(new Attendance(
                         rs.getInt("id"),
-                        rs.getInt("studentId"),
-                        rs.getDate("attendanceDate").toLocalDate(),
+                        rs.getInt("student_id"),
+                        rs.getDate("attendance_date").toLocalDate(),
                         rs.getString("status")
                 ));
             }
-        } catch (SQLException e) {
-            System.out.println(" Error retrieving Attendance by student id");
-            e.printStackTrace();
+
+        } catch ( SQLException e) {
+            System.out.println("Failed to retrieve Attendance with student id  " + studentId);
+            throw new RuntimeException("Error retrieving Attendance");
+
         }
         return attendances;
     }
@@ -63,15 +78,31 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     @Override
     public void deleteAttendance(int id) {
         String query = "DELETE FROM attendance WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-            System.out.println("Successfully deleted Attendance");
+        try {
+            connection.setAutoCommit(false);
+            if (findById(id) == null) {
+                throw new RuntimeException("Attendance not found");
 
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                stmt.setInt(1, id);
+                int rows = stmt.executeUpdate();
+                if (rows > 0) {
+                    connection.commit();
+                    System.out.println("Successfully deleted Attendance");
+
+                } else {
+                    connection.rollback();
+                }
+
+            } catch (SQLException e) {
+                connection.rollback();
+                System.out.println("Error deleting Attendance");
+                e.printStackTrace();
+
+            }
         } catch (SQLException e) {
-            System.out.println("Error deleting Attendance");
-            e.printStackTrace();
-
+            throw new RuntimeException("Error while deleting Attendance");
         }
     }
 
@@ -85,14 +116,14 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             if (rs.next()) {
                 attendance = new Attendance(
                         rs.getInt("id"),
-                        rs.getInt("studentId"),
-                        rs.getDate("AttendanceDate").toLocalDate(),
-                        rs.getString("Status"));
+                        rs.getInt("student_id"),
+                        rs.getDate("attendance_date").toLocalDate(),
+                        rs.getString("status"));
                 System.out.println("Successfully  found marked attendance");
             }
         } catch (SQLException e) {
             System.out.println("Error finding Attendance by id");
-            e.printStackTrace();
+            throw new RuntimeException("Failed to find with id" + id, e);
 
         }
 

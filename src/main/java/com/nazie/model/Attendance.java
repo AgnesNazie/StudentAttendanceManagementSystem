@@ -15,7 +15,7 @@ public class Attendance {
         setId(id);
         setStudentId(studentId);
         setAttendanceDate(attendanceDate);
-        setStatus(status);
+        setStatus(AttendanceStatus.valueOf(status.toUpperCase()));
     }
 
     //getter for id
@@ -55,7 +55,7 @@ public class Attendance {
     }
     //getter for status
 
-    public String getStatus() {
+    public  AttendanceStatus getStatus() {
         return status;
     }
     //setter for attendance status
